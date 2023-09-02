@@ -1378,7 +1378,7 @@ elif [ "$boardchoice" = "CtoX" ]; then
 	echo "You chose CFX to Xenopixel Soundfont converter."
 	echo " "
 	echo "** NOTE ** "
-	echo "boot sounds are converted to power on.wav and live in the 'set' folder."
+	echo "boot sounds are converted to power on.wav and live in the 'set' folder for v2 or 'setting' folder for v3."
 	echo "--- If there are more than one converted, the last one will be the resulting file."
 	echo " "
 	echo "color sounds are currently not supported by Xenopixel and therefore ignored."
@@ -1463,6 +1463,7 @@ echo " "
 		targetpath="Converted_to_Xenopixel/${dir}"
 		mkdir -p "$targetpath"
 	    mkdir -p "$targetpath/set"
+	    mkdir -p "$targetpath/setting"
 
     	for o in ${otherfiles}; do
 			echo "Moving "${o}" to converted folder"
@@ -1540,16 +1541,19 @@ echo " "
 				rsync -ab --no-perms "${src}" "${target}" 
 			;;
 
-	# boot sounds are converted to 'power on.wav' and live in the 'set' folder.
+	# boot sounds are converted to 'power on.wav' and live in the 'set' folder for v2 or 'setting' folder for v3.
 	# If there are more than one converted, the last one will be the resulting file.
 			*oot*([0-9]).wav)
 				targetfile="power on.wav"
 				bootcounter=$((bootcounter+1))
 				target="./$targetpath/set/$targetfile"
+				target2="./$targetpath/setting/$targetfile"
 				if [ "$verbosity" = "1" ]; then
 					echo "Converting ${src} to ${target}"
+					echo "Converting ${src} to ${target2}"
 				fi
 				rsync -ab --no-perms "${src}" "${target}" 
+				rsync -ab --no-perms "${src}" "${target2}" 
 			;;
 
 			*clash*([0-9]).wav)
@@ -2608,7 +2612,7 @@ elif [ "$boardchoice" = "PtoX" ]; then
 	echo "You chose Proffie to Xenopixel Soundfont converter."
 	echo " "
 	echo "** NOTE ** "
-	echo "boot sounds are converted to power on.wav and live in the 'set' folder."
+	echo "boot sounds are converted to power on.wav and live in the 'set' folder for v2 or 'setting' folder for v3."
 	echo "--- If there are more than one converted, the last one will be the resulting file."
 	echo " "
 	echo "color sounds are currently not supported by Xenopixel and therefore ignored."
@@ -2694,6 +2698,7 @@ echo " "
 		targetpath="Converted_to_Xenopixel/${dir}"
 		mkdir -p "$targetpath"
 	    mkdir -p "$targetpath/set"
+	    mkdir -p "$targetpath/setting"
 	    mkdir -p "$targetpath/tracks"
 
     	for o in ${otherfiles}; do
@@ -2768,16 +2773,19 @@ echo " "
 					rsync -ab --no-perms "${src}" "${target}" 
 				;;
 					
-		# boot sounds are converted to 'power on.wav and live in the 'set' folder.
+		# boot sounds are converted to 'power on.wav and live in the 'set' folder for v2 or 'setting' folder for v3.
 		# If there are more than one converted, the last one will be the resulting file.
 				boot*([0-9]).wav)
 					targetfile="power on.wav"
 					bootcounter=$((bootcounter+1))
 					target="./$targetpath/set/$targetfile"
+					target2="./$targetpath/setting/$targetfile"
 					if [ "$verbosity" = "1" ]; then
 						echo "Converting ${src} to ${target}"
+						echo "Converting ${src} to ${target2}"
 					fi
 					rsync -ab --no-perms "${src}" "${target}" 
+					rsync -ab --no-perms "${src}" "${target2}" 
 				;;
 				
 				clsh*([0-9]).wav)
@@ -3437,8 +3445,19 @@ echo " "
 		# bootcounter=1
 		clashcounter=1
 		# colorcounter=1
+
+		lockcounter=1
+		beginlockcounter=1
+		endlockcounter=1
+
 		dragcounter=1
-		# endlockcounter=1
+		begindragcounter=1
+		enddragcounter=1
+
+		meltcounter=1
+		beginmeltcounter=1
+		endmeltcounter=1
+
 		extracounter=1
 		fontcounter=1
 		forcecounter=1
@@ -3446,13 +3465,14 @@ echo " "
 		hswingcounter=1
 		humcounter=1
 		incounter=1
-		lockcounter=1
 		lswingcounter=1
 		outcounter=1
 		# preoncounter=1
-		# spincounter=1
-		# stabcounter=1
-		# swingcounter=1
+		
+		spincounter=1
+		stabcounter=1
+		swingcounter=1
+		
 		trackcounter=1
 
 		for src in ${sounds[@]}; do
@@ -3535,17 +3555,65 @@ echo " "
 					rsync -ab --no-perms "${src}" "${target}"
 				;;
 
-		# endlock sounds are currently not supported by Xenopixel and therefore ignored. 
-		# Uncomment counter above and code here and adapt targetfile if needed later.	
-		# 		endlock*([0-9]).wav)
-		# 			targetfile=$(printf %q "endlock$endlockcounter.wav")
-		# 			endlockcounter=$((endlockcounter+1))
-		# 			target="./$targetpath/$targetfile"
-		# 			if [ "$verbosity" = "1" ]; then
-		# 				echo "Converting ${src} to ${target}"
-		# 			fi
-		# 			rsync -ab --no-perms "${src}" "${target}"
-		# 		;;
+		 		begindrag**([0-9]).wav)
+		 			targetfile=$(printf %q "bgndrag$begindragcounter.wav")
+		 			begindragcounter=$((begindragcounter+1))
+		 			target="./$targetpath/$targetfile"
+		 			if [ "$verbosity" = "1" ]; then
+		 				echo "Converting ${src} to ${target}"
+		 			fi
+		 			rsync -ab --no-perms "${src}" "${target}"
+		 		;;
+
+		 		enddrag**([0-9]).wav)
+		 			targetfile=$(printf %q "enddrag$enddragcounter.wav")
+		 			enddragcounter=$((enddragcounter+1))
+		 			target="./$targetpath/$targetfile"
+		 			if [ "$verbosity" = "1" ]; then
+		 				echo "Converting ${src} to ${target}"
+		 			fi
+		 			rsync -ab --no-perms "${src}" "${target}"
+		 		;;
+
+		 		beginlock**([0-9]).wav)
+		 			targetfile=$(printf %q "bgnlock$beginlockcounter.wav")
+		 			beginlockcounter=$((beginlockcounter+1))
+		 			target="./$targetpath/$targetfile"
+		 			if [ "$verbosity" = "1" ]; then
+		 				echo "Converting ${src} to ${target}"
+		 			fi
+		 			rsync -ab --no-perms "${src}" "${target}"
+		 		;;
+
+		 		endlock**([0-9]).wav)
+		 			targetfile=$(printf %q "endlock$endlockcounter.wav")
+		 			endlockcounter=$((endlockcounter+1))
+		 			target="./$targetpath/$targetfile"
+		 			if [ "$verbosity" = "1" ]; then
+		 				echo "Converting ${src} to ${target}"
+		 			fi
+		 			rsync -ab --no-perms "${src}" "${target}"
+		 		;;
+
+		 		beginmelt**([0-9]).wav)
+		 			targetfile=$(printf %q "bgnmelt$beginmeltcounter.wav")
+		 			beginmeltcounter=$((beginmeltcounter+1))
+		 			target="./$targetpath/$targetfile"
+		 			if [ "$verbosity" = "1" ]; then
+		 				echo "Converting ${src} to ${target}"
+		 			fi
+		 			rsync -ab --no-perms "${src}" "${target}"
+		 		;;
+
+		 		endmelt**([0-9]).wav)
+		 			targetfile=$(printf %q "endmelt$endmeltcounter.wav")
+		 			endmeltcounter=$((endmeltcounter+1))
+		 			target="./$targetpath/$targetfile"
+		 			if [ "$verbosity" = "1" ]; then
+		 				echo "Converting ${src} to ${target}"
+		 			fi
+		 			rsync -ab --no-perms "${src}" "${target}"
+		 		;;
 
 				font**([0-9]).wav)
 					targetfile=$(printf %q "font.wav")
@@ -3612,6 +3680,16 @@ echo " "
 					rsync -ab --no-perms "${src}" "${target}"
 				;;
 
+				melt**([0-9]).wav)
+					targetfile=$(printf %q "melt$meltcounter.wav")
+					meltcounter=$((meltcounter+1))
+					target="./$targetpath/$targetfile"
+					if [ "$verbosity" = "1" ]; then
+						echo "Converting ${src} to ${target}"
+					fi
+					rsync -ab --no-perms "${src}" "${target}"
+				;;
+
 				lswing**|swingl**([0-9]).wav)
 					targetfile=$(printf %q "lswing$lswingcounter.wav")
 					lswingcounter=$((lswingcounter+1))
@@ -3632,9 +3710,29 @@ echo " "
 					rsync -ab --no-perms "${src}" "${target}"
 				;;
 
+				spin**([0-9]).wav)
+					targetfile=$(printf %q "stab$spincounter.wav")
+					spincounters=$((spincounter+1))
+					target="./$targetpath/$targetfile"
+					if [ "$verbosity" = "1" ]; then
+						echo "Converting ${src} to ${target}"
+					fi
+					rsync -ab --no-perms "${src}" "${target}"
+				;;
+
 				swing**([0-9]).wav)
 					targetfile=$(printf %q "swing$swingcounter.wav")
 					swingcounter=$((swingcounter+1))
+					target="./$targetpath/$targetfile"
+					if [ "$verbosity" = "1" ]; then
+						echo "Converting ${src} to ${target}"
+					fi
+					rsync -ab --no-perms "${src}" "${target}"
+				;;
+
+				stab**([0-9]).wav)
+					targetfile=$(printf %q "stab$stabcounter.wav")
+					stabcounter=$((stabcounter+1))
 					target="./$targetpath/$targetfile"
 					if [ "$verbosity" = "1" ]; then
 						echo "Converting ${src} to ${target}"
